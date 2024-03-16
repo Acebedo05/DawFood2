@@ -1,0 +1,21 @@
+NumeroTarjeta,FechaVencimiento,CVV,Saldo,NombreTitular
+1234,2025-12-01,123,100.0,Juan Perez
+5432,2025-10-04,456,500.0,Maria Rodriguez
+1122,2025-08-23,789,200.0,Pedro Gomez
+3322,2025-05-22,234,1500.0,Ana Martinez
+1422,2025-03-21,567,3000.0,Carlos Herrera
+9876,2025-11-15,789,1000.0,Sofia Fernandez
+6543,2025-09-28,321,200.0,Luis Ramirez
+8765,2025-07-19,654,300.0,Elena Sanchez
+4321,2025-04-26,987,4000.0,Manuel Gonzalez
+2468,2025-02-14,210,500.0,Andrea Lopez
+1357,2025-12-03,753,250.0,Daniel Torres
+8642,2025-10-08,246,800.0,Laura Diaz
+9753,2025-08-11,579,600.0,Miguel Ruiz
+7412,2025-06-27,852,700.0,Paula Castro
+3698,2025-04-16,753,1200.0,Javier Fernandez
+1596,2025-01-25,963,900.0,Carolina Alvarez
+7531,2025-11-09,258,1500.0,Antonio Marin
+5829,2025-09-02,159,1800.0,Isabel Rios
+1478,2025-07-14,357,2000.0,Jorge Velazquez
+3961,2025-05-07,951,3000.0,Beatriz Serrano

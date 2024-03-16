@@ -5,6 +5,8 @@ import daw.modos.FuncionesUsuario;
 import daw.productos.Producto;
 import daw.tpv.FuncionesTPV;
 import daw.tpv.ObjetosTPV;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,9 +14,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Clase con las funciones relacionadas con el carrito de compras.
@@ -30,14 +34,39 @@ public class FuncionesCarrito {
     private FuncionesUsuario funcionesUsuario;
     private static int idPedidoContador = 1;
 
-    // Constructor que inicializa la lista de tarjetas.
+    // Constructor que inicializa la lista de tarjetas leyendo desde un archivo CSV.
     public FuncionesCarrito(FuncionesUsuario funcionesUsuario) {
         this.funcionesUsuario = funcionesUsuario;
-        listaDeTarjetas.add(new AtributosTarjeta(1234, LocalDate.of(2025, 12, 1), 123, 100, "Juan Perez"));
-        listaDeTarjetas.add(new AtributosTarjeta(5432, LocalDate.of(2025, 10, 4), 456, 500, "Maria Rodriguez"));
-        listaDeTarjetas.add(new AtributosTarjeta(1122, LocalDate.of(2025, 8, 23), 789, 200, "Pedro Gomez"));
-        listaDeTarjetas.add(new AtributosTarjeta(3322, LocalDate.of(2025, 5, 22), 234, 1500, "Ana Martinez"));
-        listaDeTarjetas.add(new AtributosTarjeta(1422, LocalDate.of(2025, 3, 21), 567, 3000, "Carlos Herrera"));
+        cargarTarjetasDesdeCSV("Tarjetas.csv");
+    }
+
+    // Método para coger las tarjetas desde un CSV.
+    private void cargarTarjetasDesdeCSV(String archivo) {
+        try (Scanner scanner = new Scanner(new File(archivo))) {
+            // Saltar la primera línea (encabezado)
+            if (scanner.hasNextLine()) {
+                scanner.nextLine();
+            }
+
+            // Leer cada línea del archivo CSV y crear una tarjeta para cada una.
+            while (scanner.hasNextLine()) {
+                String[] campos = scanner.nextLine().split(",");
+                if (campos.length == 5) {
+                    int numeroTarjeta = Integer.parseInt(campos[0]);
+                    LocalDate fechaVencimiento = LocalDate.parse(campos[1]);
+                    int cvv = Integer.parseInt(campos[2]);
+                    double saldo = Double.parseDouble(campos[3]);
+                    String nombreTitular = campos[4];
+                    listaDeTarjetas.add(new AtributosTarjeta(numeroTarjeta, fechaVencimiento, cvv, saldo, nombreTitular));
+                } else {
+                    System.out.println("Error al leer la línea del archivo CSV: " + Arrays.toString(campos));
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("No se pudo encontrar el archivo CSV: " + e.getMessage());
+        } catch (DateTimeParseException | NumberFormatException e) {
+            System.err.println("Error al analizar los datos del archivo CSV: " + e.getMessage());
+        }
     }
 
     // Método para agregar productos seleccionados al carrito.
