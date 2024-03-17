@@ -72,7 +72,7 @@ public class FuncionesCarrito {
     // Método para agregar productos seleccionados al carrito.
     public static void agregarProductoAlCarrito(Producto producto) {
         // Verificar si el producto está en stock
-        if (!producto.isEnStock()) {
+        if (producto.getEnStock()<= 0) {
             JOptionPane.showMessageDialog(null, "El producto '" + producto.getNombre() + "' no está disponible en stock.", "Producto no disponible", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -85,12 +85,14 @@ public class FuncionesCarrito {
             int cantidad = Integer.parseInt(cantidada);
 
             if (cantidad > 0) {
-                for (int i = 0; i < cantidad; i++) {
-                    // Agregar el producto al carrito una vez por cada iteración
-                    carrito.put(producto, carrito.getOrDefault(producto, 0) + 1);
+                // Verificar si la cantidad ingresada es menor o igual al stock disponible
+                if (cantidad <= producto.getEnStock()) {
+                    // Agregar el producto al carrito
+                    carrito.put(producto, carrito.getOrDefault(producto, 0) + cantidad);
+                    JOptionPane.showMessageDialog(null, cantidad + " x '" + producto.getNombre() + "' ha sido agregado al carrito.");
+                } else {
+                    JOptionPane.showMessageDialog(null, "La cantidad ingresada supera el stock disponible. Stock actual: " + producto.getEnStock(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
-
-                JOptionPane.showMessageDialog(null, cantidad + " x '" + producto.getNombre() + "' ha sido agregado al carrito.");
             } else {
                 JOptionPane.showMessageDialog(null, "La cantidad debe ser mayor que 0. No se ha agregado nada al carrito.", "Error", JOptionPane.ERROR_MESSAGE);
             }
