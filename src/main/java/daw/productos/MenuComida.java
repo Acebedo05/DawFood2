@@ -7,6 +7,9 @@ import daw.tpv.FuncionesTPV;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,20 +48,29 @@ public class MenuComida {
     // Método estático para inicializar la lista de comidas.
     public static void llamarInicializarComidas() {
         // Inicializar las listas.
-        inicializarComidas();
+        inicializarComidasDesdeCSV("Comidas.csv");
     }
 
-    // Método estático para inicializar la lista de comidas con datos.
-    private static void inicializarComidas() {
-        comidas.add(new Producto("P01", "Pizza 4 Quesos", 8.00, true, "Pizza con cuatro tipos de quesos", "Comida", 0.10, "Pizza"));
-        comidas.add(new Producto("P02", "Pizza Margarita", 9.00, true, "Pizza con queso y tomate", "Comida", 0.10, "Pizza"));
-        comidas.add(new Producto("P03", "Pizza Boloñesa", 10.00, true, "Pizza con salsa boloñesa", "Comida", 0.10, "Pizza"));
-        comidas.add(new Producto("H01", "Hamburguesa Ternera", 7.00, true, "Hamburguesa de ternera", "Comida", 0.10, "Hamburguesa"));
-        comidas.add(new Producto("H02", "Hamburguesa Pollo", 6.00, true, "Hamburguesa de pollo", "Comida", 0.10, "Hamburguesa"));
-        comidas.add(new Producto("H03", "Hamburguesa Vegetal", 5.00, true, "Hamburguesa vegetariana", "Comida", 0.10, "Hamburguesa"));
-        comidas.add(new Producto("K01", "Kebab Ternera", 4.00, true, "Kebab de ternera", "Comida", 0.10, "Kebab"));
-        comidas.add(new Producto("K02", "Kebab Pollo", 4.00, true, "Kebab de pollo", "Comida", 0.10, "Kebab"));
-        comidas.add(new Producto("K03", "Kebab Mixto", 5.00, true, "Kebab mixto", "Comida", 0.10, "Kebab"));
+    // Método estático para inicializar la lista de bebidas con datos.
+    public static void inicializarComidasDesdeCSV(String archivoCSV) {
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoCSV))) {
+            String linea;
+            // Saltamos la primera línea ya que contiene los encabezados.
+            br.readLine();
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+                // Verificamos si hay suficientes datos en la línea.
+                if (datos.length == 8) {
+                    // Creamos un nuevo objeto Producto y lo agregamos a la lista de comidas.
+                    Producto producto = new Producto(datos[0], datos[1], Double.parseDouble(datos[2]), Integer.parseInt(datos[3]), datos[4], datos[5], Double.parseDouble(datos[6]), datos[7]);
+                    comidas.add(producto);
+                } else {
+                    System.out.println("Error: La línea no contiene la cantidad correcta de datos (Comidas.csv).");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Método principal que muestra el menú de selección para el usuario.
@@ -93,7 +105,7 @@ public class MenuComida {
 
         // Configurar la ventana.
         frame.add(panel);
-        frame.setSize(400, 160);
+        frame.setSize(800, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -138,7 +150,7 @@ public class MenuComida {
 
         // Configurar la ventana.
         frame.add(panel);
-        frame.setSize(400, 160);
+        frame.setSize(800, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -173,7 +185,7 @@ public class MenuComida {
 
         // Configurar la ventana.
         frame.add(panel);
-        frame.setSize(400, 160);
+        frame.setSize(800, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -208,7 +220,7 @@ public class MenuComida {
 
         // Configurar la ventana.
         frame.add(panel);
-        frame.setSize(400, 160);
+        frame.setSize(800, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -288,7 +300,7 @@ public class MenuComida {
         double precio = obtenerPrecioValido();
 
         // Establecer que el nuevo producto está en stock por defecto.
-        boolean enStock = true;
+        int enStock = obtenerStockValido();
 
         // Solicitar al usuario que ingrese la descripción del nuevo producto.
         String descripcion = JOptionPane.showInputDialog("Ingrese la descripción del nuevo producto:");
@@ -538,23 +550,37 @@ public class MenuComida {
         JOptionPane.showMessageDialog(null, "No se encontró ningún producto con el nombre proporcionado.");
     }
 
-    // Método para obtener un valor booleano válido para el stock.
-    private boolean obtenerStockValido() {
-        // Define las opciones para la respuesta de stock ("Sí" o "No").
-        String[] opciones = {"Sí", "No"};
+    // Método para obtener la cantidad de stock válida para el producto.
+    private int obtenerStockValido() {
+        int stock = 0;
+        boolean entradaValida = false;
 
-        // Muestra un cuadro de diálogo de opción con las opciones definidas.
-        int eleccion = JOptionPane.showOptionDialog(
-                null,
-                "¿Está este producto en Stock?",
-                "Stock",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opciones,
-                opciones[0]
-        );
+        // Solicitar al usuario la cantidad de stock hasta que se ingrese un valor válido.
+        while (!entradaValida) {
+            try {
+                // Solicitar al usuario que ingrese la cantidad de stock del producto.
+                String entrada = JOptionPane.showInputDialog("Ingrese la cantidad de stock del producto:");
+                if (entrada == null) {
+                    // Si el usuario cancela, salir del método.
+                    return 0;
+                }
 
-        return eleccion == 0;  // Devuelve true si se selecciona "Sí", false si se selecciona "No"
+                // Convertir la entrada a entero.
+                stock = Integer.parseInt(entrada);
+
+                // Verificar que la cantidad de stock sea un valor positivo.
+                if (stock >= 0) {
+                    entradaValida = true;
+                } else {
+                    // Mostrar un mensaje de error si la cantidad de stock es negativa.
+                    JOptionPane.showMessageDialog(null, "Por favor, ingrese un valor positivo para la cantidad de stock.");
+                }
+            } catch (NumberFormatException e) {
+                // Mostrar un mensaje de error si la entrada no es un número válido.
+                JOptionPane.showMessageDialog(null, "Por favor, ingrese un valor numérico para la cantidad de stock.");
+            }
+        }
+
+        return stock;
     }
 }

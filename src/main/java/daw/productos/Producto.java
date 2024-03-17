@@ -13,14 +13,14 @@ public class Producto {
     private final String id;
     private String nombre;
     private double precio;
-    private boolean enStock;
+    private int enStock;
     private String descripcion;
     private String categoria;
     private double iva;
     private String subcategoria;
 
     // Constructor.
-    public Producto(String id, String nombre, double precio, boolean enStock, String descripcion, String categoria, double iva, String subcategoria) {
+    public Producto(String id, String nombre, double precio, int enStock, String descripcion, String categoria, double iva, String subcategoria) {
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
@@ -52,11 +52,11 @@ public class Producto {
         this.precio = precio;
     }
 
-    public boolean isEnStock() {
+    public int getEnStock() {
         return enStock;
     }
 
-    public void setEnStock(boolean enStock) {
+    public void setEnStock(int enStock) {
         this.enStock = enStock;
     }
 
@@ -102,14 +102,14 @@ public class Producto {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 59 * hash + Objects.hashCode(this.id);
-        hash = 59 * hash + Objects.hashCode(this.nombre);
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.precio) ^ (Double.doubleToLongBits(this.precio) >>> 32));
-        hash = 59 * hash + (this.enStock ? 1 : 0);
-        hash = 59 * hash + Objects.hashCode(this.descripcion);
-        hash = 59 * hash + Objects.hashCode(this.categoria);
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.iva) ^ (Double.doubleToLongBits(this.iva) >>> 32));
-        hash = 59 * hash + Objects.hashCode(this.subcategoria);
+        hash = 41 * hash + Objects.hashCode(this.id);
+        hash = 41 * hash + Objects.hashCode(this.nombre);
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.precio) ^ (Double.doubleToLongBits(this.precio) >>> 32));
+        hash = 41 * hash + this.enStock;
+        hash = 41 * hash + Objects.hashCode(this.descripcion);
+        hash = 41 * hash + Objects.hashCode(this.categoria);
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.iva) ^ (Double.doubleToLongBits(this.iva) >>> 32));
+        hash = 41 * hash + Objects.hashCode(this.subcategoria);
         return hash;
     }
 
@@ -149,7 +149,7 @@ public class Producto {
         }
         return Objects.equals(this.subcategoria, other.subcategoria);
     }
-
+    
     // toString
     @Override
     public String toString() {
@@ -166,5 +166,5 @@ public class Producto {
         sb.append('}');
         return sb.toString();
     }
-
+    
 }

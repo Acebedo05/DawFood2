@@ -1,0 +1,21 @@
+ID,Nombre,Precio,EnStock,Descripción,Categoría,IVA,Subcategoría
+C01,Arroz con Leche,3.50,15,Arroz con leche casero,Postre,0.10,Casero
+C02,Crema Catalana,4.00,20,Crema catalana casera,Postre,0.10,Casero
+C03,Flan,4.00,18,Flan casero,Postre,0.10,Casero
+C04,Gelatina,3.00,25,Gelatina casera de frutas,Postre,0.10,Casero
+C05,Helado de Chocolate,4.50,20,Helado de chocolate casero,Postre,0.10,Casero
+C06,Leche Frita,4.50,12,Leche frita casera,Postre,0.10,Casero
+C07,Magdalenas,2.00,30,Magdalenas caseras,Postre,0.10,Casero
+C08,Mousse de Limón,4.50,18,Mousse de limón casera,Postre,0.10,Casero
+C09,Natillas,3.50,22,Natillas caseras,Postre,0.10,Casero
+C10,Panqueques,3.00,20,Panqueques caseros con sirope,Postre,0.10,Casero
+C11,Pastel de Zanahoria,5.00,15,Pastel de zanahoria casero con glaseado de queso crema,Postre,0.10,Casero
+C12,Pastel de Manzana,4.50,18,Pastel de manzana casero con canela,Postre,0.10,Casero
+C13,Pudín de Chocolate,4.00,20,Pudín de chocolate casero,Postre,0.10,Casero
+C14,Tarta de Queso,5.50,16,Tarta de queso casera con mermelada de frutos rojos,Postre,0.10,Casero
+C15,Tiramisú,5.50,18,Tiramisú casero,Postre,0.10,Casero
+C16,Tarta de Fresa,5.00,15,Tarta de fresa casera con crema pastelera,Postre,0.10,Casero
+C17,Tarta de Manzana,4.50,20,Tarta de manzana casera con masa quebrada,Postre,0.10,Casero
+C18,Sorbete de Limón,3.50,25,Sorbete de limón casero,Postre,0.10,Casero
+C19,Flan de Huevo,4.00,20,Flan de huevo casero con caramelo,Postre,0.10,Casero
+C20,Helado de Vainilla,4.50,18,Helado de vainilla casero,Postre,0.10,Casero

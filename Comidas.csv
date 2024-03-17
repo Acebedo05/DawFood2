@@ -1,0 +1,21 @@
+ID,Nombre,Precio,EnStock,Descripción,Categoría,IVA,Subcategoría
+H01,Hamburguesa Ternera,7.00,30,Hamburguesa de ternera,Comida,0.10,Hamburguesa
+H02,Hamburguesa Pollo,6.00,25,Hamburguesa de pollo,Comida,0.10,Hamburguesa
+H03,Hamburguesa Vegetal,5.00,18,Hamburguesa vegetariana,Comida,0.10,Hamburguesa
+H04,Hamburguesa con Queso,7.50,20,Hamburguesa con queso cheddar,Comida,0.10,Hamburguesa
+H05,Hamburguesa Doble,8.00,15,Hamburguesa doble con bacon,Comida,0.10,Hamburguesa
+H06,Hamburguesa Vegana,6.50,10,Hamburguesa vegana de garbanzos,Comida,0.10,Hamburguesa
+K01,Kebab Ternera,4.00,22,Kebab de ternera,Comida,0.10,Kebab
+K02,Kebab Pollo,4.00,20,Kebab de pollo,Comida,0.10,Kebab
+K03,Kebab Mixto,5.00,17,Kebab mixto,Comida,0.10,Kebab
+K04,Kebab de Pollo Picante,4.50,18,Kebab de pollo con salsa picante,Comida,0.10,Kebab
+K05,Kebab Mixto con Salsa de Yogur,5.50,16,Kebab mixto con salsa de yogur,Comida,0.10,Kebab
+K06,Kebab de Tofu,5.00,10,Kebab de tofu y verduras,Comida,0.10,Kebab
+P01,Pizza 4 Quesos,8.00,10,Pizza con cuatro tipos de quesos,Comida,0.10,Pizza
+P02,Pizza Margarita,9.00,15,Pizza con queso y tomate,Comida,0.10,Pizza
+P03,Pizza Boloñesa,10.00,20,Pizza con salsa boloñesa,Comida,0.10,Pizza
+P04,Pizza Carbonara,10.00,12,Pizza con salsa carbonara,Comida,0.10,Pizza
+P05,Pizza Hawaiana,9.00,14,Pizza con piña y jamón,Comida,0.10,Pizza
+P06,Pizza Vegetariana,9.50,18,Pizza con vegetales variados,Comida,0.10,Pizza
+P07,Pizza Barbacoa,10.50,20,Pizza con carne de barbacoa,Comida,0.10,Pizza
+P08,Pizza Napolitana,9.50,15,Pizza con anchoas y aceitunas,Comida,0.10,Pizza

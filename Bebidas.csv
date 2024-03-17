@@ -1,0 +1,21 @@
+ID,Nombre,Precio,EnStock,Descripcion,Categoria,IVA,Subcategoria
+A01,Vino,5.00,10,Vino,Bebida,0.21,Alcoholica
+A02,Sidra,5.00,20,Sidra,Bebida,0.21,Alcoholica
+A03,Cerveza,2.00,15,Cerveza,Bebida,0.21,Alcoholica
+A04,Whisky,8.00,5,Whisky,Bebida,0.21,Alcoholica
+A05,Tequila,7.00,8,Tequila,Bebida,0.21,Alcoholica
+A06,Vodka,6.00,12,Vodka,Bebida,0.21,Alcoholica
+R01,CocaCola,2.00,25,CocaCola,Bebida,0.21,Refresco
+R02,Fanta,2.00,30,Fanta,Bebida,0.21,Refresco
+R03,Aquarius,2.00,18,Aquarius,Bebida,0.21,Refresco
+R04,Pepsi,2.00,22,Pepsi,Bebida,0.21,Refresco
+R05,Mirinda,2.00,17,Mirinda,Bebida,0.21,Refresco
+R06,Limón Soda,2.00,29,Limón Soda,Bebida,0.21,Refresco
+R07,Tónica,1.50,24,Tónica,Bebida,0.21,Refresco
+R08,Limonada,2.00,23,Limonada,Bebida,0.21,Refresco
+W01,Agua Natural,1.00,50,Agua Natural,Bebida,0.10,Agua
+W02,Agua con Gas,1.00,45,Agua con Gas,Bebida,0.10,Agua
+W03,Agua Fria,1.00,55,Agua Fria,Bebida,0.10,Agua
+W04,Agua Tónica,1.50,40,Agua Tónica,Bebida,0.10,Agua
+W05,Agua de Coco,2.00,60,Agua de Coco,Bebida,0.10,Agua
+W06,Agua Mineral,1.50,48,Agua Mineral,Bebida,0.10,Agua

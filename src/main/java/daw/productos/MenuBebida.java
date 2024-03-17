@@ -7,6 +7,9 @@ import daw.tpv.FuncionesTPV;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,23 +45,32 @@ public class MenuBebida {
         menuSeleccionBebidas();
     }
 
-    // Método estático para inicializar la lista de bebidas.
+    // Método estático para inicializar las bebidas.
     public static void llamarInicializarBebidas() {
-        // Inicializar las listas.
-        inicializarBebidas();
+        // Inicializar las Bebidas.
+        inicializarBebidasDesdeCSV("Bebidas.csv");
     }
 
     // Método estático para inicializar la lista de bebidas con datos.
-    private static void inicializarBebidas() {
-        bebidas.add(new Producto("A01", "Vino", 5.00, true, "Vino", "Bebida", 0.21, "Alcoholica"));
-        bebidas.add(new Producto("A02", "Sidra", 5.00, true, "Sidra", "Bebida", 0.21, "Alcoholica"));
-        bebidas.add(new Producto("A03", "Cerveza", 2.00, true, "Cerveza", "Bebida", 0.21, "Alcoholica"));
-        bebidas.add(new Producto("R01", "CocaCola", 2.00, true, "CocaCola", "Bebida", 0.21, "Refresco"));
-        bebidas.add(new Producto("R02", "Fanta", 2.00, true, "Fanta", "Bebida", 0.21, "Refresco"));
-        bebidas.add(new Producto("R03", "Aquarius", 2.00, true, "Aquarius", "Bebida", 0.21, "Refresco"));
-        bebidas.add(new Producto("W01", "Agua Natural", 1.00, true, "Agua Natural", "Bebida", 0.10, "Agua"));
-        bebidas.add(new Producto("W02", "Agua con Gas", 1.00, true, "Agua con Gas", "Bebida", 0.10, "Agua"));
-        bebidas.add(new Producto("W03", "Agua Fria", 1.00, true, "Agua Fría", "Bebida", 0.10, "Agua"));
+    public static void inicializarBebidasDesdeCSV(String archivoCSV) {
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoCSV))) {
+            String linea;
+            // Saltamos la primera línea ya que contiene los encabezados.
+            br.readLine();
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+                // Verificamos si hay suficientes datos en la línea.
+                if (datos.length == 8) {
+                    // Creamos un nuevo objeto Producto y lo agregamos a la lista de bebidas.
+                    Producto producto = new Producto(datos[0], datos[1], Double.parseDouble(datos[2]), Integer.parseInt(datos[3]), datos[4], datos[5], Double.parseDouble(datos[6]), datos[7]);
+                    bebidas.add(producto);
+                } else {
+                    System.err.println("Error: La línea no contiene la cantidad correcta de datos (Bebidas.csv).");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Método principal que muestra el menú de selección para el usuario.
@@ -93,7 +105,7 @@ public class MenuBebida {
 
         // Configurar la ventana.
         frame.add(panel);
-        frame.setSize(400, 160);
+        frame.setSize(800, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -138,7 +150,7 @@ public class MenuBebida {
 
         // Configurar la ventana.
         frame.add(panel);
-        frame.setSize(400, 160);
+        frame.setSize(800, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -173,7 +185,7 @@ public class MenuBebida {
 
         // Configurar la ventana.
         frame.add(panel);
-        frame.setSize(400, 160);
+        frame.setSize(800, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -184,7 +196,7 @@ public class MenuBebida {
         // Crear la ventana del menú.
         JFrame frame = new JFrame("Tipos de Agua");
 
-        // Crear un panel para colocar los botones.
+        // Crear un panel para colocar los botones. 
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         // Crear botones para cada opción del menú.
@@ -208,7 +220,7 @@ public class MenuBebida {
 
         // Configurar la ventana.
         frame.add(panel);
-        frame.setSize(400, 160);
+        frame.setSize(800, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -288,7 +300,7 @@ public class MenuBebida {
         double precio = obtenerPrecioValido();
 
         // Establecer que el nuevo producto está en stock por defecto.
-        boolean enStock = true;
+        int enStock = obtenerStockValido();
 
         // Solicitar al usuario que ingrese la descripción del nuevo producto.
         String descripcion = JOptionPane.showInputDialog("Ingrese la descripción del nuevo producto:");
@@ -538,24 +550,38 @@ public class MenuBebida {
         JOptionPane.showMessageDialog(null, "No se encontró ningún producto con el nombre proporcionado.");
     }
 
-    // Método para obtener un valor booleano válido para el stock.
-    private boolean obtenerStockValido() {
-        // Define las opciones para la respuesta de stock ("Sí" o "No").
-        String[] opciones = {"Sí", "No"};
+    // Método para obtener la cantidad de stock válida para el producto.
+    private int obtenerStockValido() {
+        int stock = 0;
+        boolean entradaValida = false;
 
-        // Muestra un cuadro de diálogo de opción con las opciones definidas.
-        int eleccion = JOptionPane.showOptionDialog(
-                null,
-                "¿Está este producto en Stock?",
-                "Stock",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opciones,
-                opciones[0]
-        );
+        // Solicitar al usuario la cantidad de stock hasta que se ingrese un valor válido.
+        while (!entradaValida) {
+            try {
+                // Solicitar al usuario que ingrese la cantidad de stock del producto.
+                String entrada = JOptionPane.showInputDialog("Ingrese la cantidad de stock del producto:");
+                if (entrada == null) {
+                    // Si el usuario cancela, salir del método.
+                    return 0;
+                }
 
-        return eleccion == 0;  // Devuelve true si se selecciona "Sí", false si se selecciona "No"
+                // Convertir la entrada a entero.
+                stock = Integer.parseInt(entrada);
+
+                // Verificar que la cantidad de stock sea un valor positivo.
+                if (stock >= 0) {
+                    entradaValida = true;
+                } else {
+                    // Mostrar un mensaje de error si la cantidad de stock es negativa.
+                    JOptionPane.showMessageDialog(null, "Por favor, ingrese un valor positivo para la cantidad de stock.");
+                }
+            } catch (NumberFormatException e) {
+                // Mostrar un mensaje de error si la entrada no es un número válido.
+                JOptionPane.showMessageDialog(null, "Por favor, ingrese un valor numérico para la cantidad de stock.");
+            }
+        }
+
+        return stock;
     }
 
 }
