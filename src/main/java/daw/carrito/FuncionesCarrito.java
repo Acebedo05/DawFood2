@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -72,7 +73,7 @@ public class FuncionesCarrito {
     // Método para agregar productos seleccionados al carrito.
     public static void agregarProductoAlCarrito(Producto producto) {
         // Verificar si el producto está en stock
-        if (producto.getEnStock()<= 0) {
+        if (producto.getEnStock() <= 0) {
             JOptionPane.showMessageDialog(null, "El producto '" + producto.getNombre() + "' no está disponible en stock.", "Producto no disponible", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -150,6 +151,7 @@ public class FuncionesCarrito {
     public static void procesarPago() {
         // Calcular el precio total con IVA
         double precioTotal = calcularPrecioTotalConIVA();
+        FuncionesCarrito funcionesCarrito = new FuncionesCarrito(null);
 
         // Verificar si hay productos en el carrito.
         if (precioTotal != 0) {
@@ -159,6 +161,37 @@ public class FuncionesCarrito {
             // Permitir hasta 2 intentos de pago.
             while (!tarjetaValida && intentos < 2) {
                 try {
+                    // Verificar si hay suficiente stock para todos los productos en el carrito.
+                    boolean haySuficienteStock = true; // Variable para verificar el stock de todos los productos en el carrito.
+
+                    for (Iterator<Map.Entry<Producto, Integer>> iterator = carrito.entrySet().iterator(); iterator.hasNext();) {
+                        Map.Entry<Producto, Integer> entry = iterator.next();
+                        Producto producto = entry.getKey();
+                        int cantidad = entry.getValue();
+
+                        // Verificar si la cantidad solicitada es mayor que el stock disponible.
+                        if (cantidad > producto.getEnStock()) {
+                            JOptionPane.showMessageDialog(null, "El número de '" + producto.getNombre() + "' en el carrito excede la cantidad disponible en stock (" + producto.getEnStock() + "). Por lo que, el producto será eliminado del carrito.");
+                            iterator.remove(); // Eliminar el producto del carrito.
+                            haySuficienteStock = false;
+
+                            // Si el carrito queda vacío, salir del bucle de intentos.
+                            if (carrito.isEmpty()) {
+                                JOptionPane.showMessageDialog(null, "El carrito está vacío. No se puede realizar la compra.");
+                                llamarEncenderTPV();
+                                return;
+                            } else {
+                                funcionesCarrito.mostrarMenuCarritoConPrecios();
+                            }
+
+                        }
+                    }
+
+                    // Si no hay suficiente stock, continuar con el siguiente intento.
+                    if (!haySuficienteStock) {
+                        continue;
+                    }
+
                     // Solicitar al usuario el número de tarjeta.
                     String stringNumTarj = JOptionPane.showInputDialog("Ingrese el número de su tarjeta:");
 
