@@ -5,9 +5,9 @@ import daw.modos.FuncionesUsuario;
 import daw.productos.Producto;
 import daw.tpv.FuncionesTPV;
 import daw.tpv.ObjetosTPV;
+
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,7 +16,6 @@ import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -73,29 +72,38 @@ public class FuncionesCarrito {
     // Método para agregar productos seleccionados al carrito.
     public static void agregarProductoAlCarrito(Producto producto) {
         // Verificar si el producto está en stock
-        if (producto.getEnStock() <= 0) {
+        if (producto.getEnStock()<= 0) {
             JOptionPane.showMessageDialog(null, "El producto '" + producto.getNombre() + "' no está disponible en stock.", "Producto no disponible", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
+        // Obtener la cantidad disponible en stock y en el carrito
+        int cantidadEnStock = producto.getEnStock();
+        int cantidadEnCarrito = carrito.containsKey(producto) ? carrito.get(producto) : 0;
+
+        // Calcular la cantidad máxima que se puede agregar al carrito respetando el stock
+        int cantidadMaxima = Math.min(cantidadEnStock, cantidadEnStock - cantidadEnCarrito);
+
         // Pedir al usuario que ingrese la cantidad utilizando JOptionPane
-        String cantidada = JOptionPane.showInputDialog("Ingrese la cantidad de '" + producto.getNombre() + "' que desea agregar al carrito:");
+        String cantidada = JOptionPane.showInputDialog("Ingrese la cantidad de '" + producto.getNombre() + "' que desea agregar al carrito (Stock Disponible: " + cantidadMaxima + " unidades):");
 
         try {
             // Convertir la cantidad ingresada a un número entero
             int cantidad = Integer.parseInt(cantidada);
 
-            if (cantidad > 0) {
-                // Verificar si la cantidad ingresada es menor o igual al stock disponible
-                if (cantidad <= producto.getEnStock()) {
-                    // Agregar el producto al carrito
-                    carrito.put(producto, carrito.getOrDefault(producto, 0) + cantidad);
-                    JOptionPane.showMessageDialog(null, cantidad + " x '" + producto.getNombre() + "' ha sido agregado al carrito.");
-                } else {
-                    JOptionPane.showMessageDialog(null, "La cantidad ingresada supera el stock disponible. Stock actual: " + producto.getEnStock(), "Error", JOptionPane.ERROR_MESSAGE);
+            if (cantidad > 0 && cantidad <= cantidadMaxima) {
+                // Verificar si el producto ya está en el carrito
+                if (carrito.containsKey(producto)) {
+                    // Si el producto ya está en el carrito, sumar la nueva cantidad a la cantidad existente
+                    cantidad += carrito.get(producto);
                 }
+
+                // Actualizar la cantidad en el carrito
+                carrito.put(producto, cantidad);
+
+                JOptionPane.showMessageDialog(null, cantidada + " x '" + producto.getNombre() + "' ha sido agregado al carrito.");
             } else {
-                JOptionPane.showMessageDialog(null, "La cantidad debe ser mayor que 0. No se ha agregado nada al carrito.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "La cantidad debe ser mayor que 0 y no puede exceder el stock disponible. No se ha agregado nada al carrito.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Por favor, ingrese un número válido para la cantidad.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -161,37 +169,6 @@ public class FuncionesCarrito {
             // Permitir hasta 2 intentos de pago.
             while (!tarjetaValida && intentos < 2) {
                 try {
-                    // Verificar si hay suficiente stock para todos los productos en el carrito.
-                    boolean haySuficienteStock = true; // Variable para verificar el stock de todos los productos en el carrito.
-
-                    for (Iterator<Map.Entry<Producto, Integer>> iterator = carrito.entrySet().iterator(); iterator.hasNext();) {
-                        Map.Entry<Producto, Integer> entry = iterator.next();
-                        Producto producto = entry.getKey();
-                        int cantidad = entry.getValue();
-
-                        // Verificar si la cantidad solicitada es mayor que el stock disponible.
-                        if (cantidad > producto.getEnStock()) {
-                            JOptionPane.showMessageDialog(null, "El número de '" + producto.getNombre() + "' en el carrito excede la cantidad disponible en stock (" + producto.getEnStock() + "). Por lo que, el producto será eliminado del carrito.");
-                            iterator.remove(); // Eliminar el producto del carrito.
-                            haySuficienteStock = false;
-
-                            // Si el carrito queda vacío, salir del bucle de intentos.
-                            if (carrito.isEmpty()) {
-                                JOptionPane.showMessageDialog(null, "El carrito está vacío. No se puede realizar la compra.");
-                                llamarEncenderTPV();
-                                return;
-                            } else {
-                                funcionesCarrito.mostrarMenuCarritoConPrecios();
-                            }
-
-                        }
-                    }
-
-                    // Si no hay suficiente stock, continuar con el siguiente intento.
-                    if (!haySuficienteStock) {
-                        continue;
-                    }
-
                     // Solicitar al usuario el número de tarjeta.
                     String stringNumTarj = JOptionPane.showInputDialog("Ingrese el número de su tarjeta:");
 
