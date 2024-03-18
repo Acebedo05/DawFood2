@@ -65,11 +65,11 @@ public class MenuPostre {
                     Producto producto = new Producto(datos[0], datos[1], Double.parseDouble(datos[2]), Integer.parseInt(datos[3]), datos[4], datos[5], Double.parseDouble(datos[6]), datos[7]);
                     caseros.add(producto);
                 } else {
-                    System.err.println("Error: La línea no contiene la cantidad correcta de datos (Postres.csv).");
+                    System.out.println("Error: La línea no contiene la cantidad correcta de datos (Postres.csv).");
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error accediendo a al fichero Postres.csv.");
         }
     }
 

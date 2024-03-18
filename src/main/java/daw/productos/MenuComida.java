@@ -51,7 +51,7 @@ public class MenuComida {
         inicializarComidasDesdeCSV("Comidas.csv");
     }
 
-    // Método estático para inicializar la lista de bebidas con datos.
+    // Método estático para inicializar la lista de comidas con datos.
     public static void inicializarComidasDesdeCSV(String archivoCSV) {
         try (BufferedReader br = new BufferedReader(new FileReader(archivoCSV))) {
             String linea;
@@ -69,7 +69,7 @@ public class MenuComida {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error accediendo a al fichero Comidas.csv.");
         }
     }
 
