@@ -1,5 +1,5 @@
 NumeroTarjeta,FechaVencimiento,CVV,Saldo,NombreTitular
-1234,2025-12-01,123,100.0,Juan Perez
+1234,2025-12-01,123,1000.0,Juan Perez
 5432,2025-10-04,456,500.0,Maria Rodriguez
 1122,2025-08-23,789,200.0,Pedro Gomez
 3322,2025-05-22,234,1500.0,Ana Martinez

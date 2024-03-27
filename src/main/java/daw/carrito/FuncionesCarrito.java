@@ -8,6 +8,11 @@ import daw.tpv.ObjetosTPV;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,6 +43,10 @@ public class FuncionesCarrito {
     public FuncionesCarrito(FuncionesUsuario funcionesUsuario) {
         this.funcionesUsuario = funcionesUsuario;
         cargarTarjetasDesdeCSV("Tarjetas.csv");
+        // Verificar si la lista de tickets está vacía antes de cargar los datos desde el archivo CSV
+        if (listaDeTickets.isEmpty()) {
+            leerTicketsDesdeCSV("Tickets.csv");
+        }
     }
 
     // Método para coger las tarjetas desde un CSV.
@@ -63,9 +72,9 @@ public class FuncionesCarrito {
                 }
             }
         } catch (FileNotFoundException e) {
-            System.err.println("No se pudo encontrar el archivo CSV: " + e.getMessage());
+            System.out.println("No se pudo encontrar el archivo CSV: " + e.getMessage());
         } catch (DateTimeParseException | NumberFormatException e) {
-            System.err.println("Error al analizar los datos del archivo CSV: " + e.getMessage());
+            System.out.println("Error al analizar los datos del archivo CSV: " + e.getMessage());
         }
     }
 
@@ -329,25 +338,33 @@ public class FuncionesCarrito {
         // Obtener la fecha y hora actual
         LocalDateTime fechaYHoraOperacion = LocalDateTime.now();
 
-        // Crear una cadena para almacenar la información de los productos comprados.
-        StringBuilder productosComprados = new StringBuilder("\nProductos Seleccionados:\n");
+        // Crear una lista para almacenar la información de los productos comprados.
+        List<String> productosComprados = new ArrayList<>();
+
+        // Iterar sobre las entradas (producto y cantidad) en el carrito.
         for (Map.Entry<Producto, Integer> entry : carrito.entrySet()) {
             Producto producto = entry.getKey();
             int cantidad = entry.getValue();
 
-            productosComprados.append("ID: ").append(producto.getId()).append(" -- ");
-            productosComprados.append("Nombre: ").append(producto.getNombre()).append(" -- ");
-            productosComprados.append("Descripción: ").append(producto.getDescripcion()).append(" -- ");
-            productosComprados.append("Precio: ").append(producto.getPrecio()).append(" € (sin IVA) -- ");
-            productosComprados.append("Cantidad: ").append(cantidad).append(" unidades -- ");
-            productosComprados.append("IVA: ").append(producto.getIva()).append("\n");
+            // Construir la cadena con la información del producto.
+            String productoInfo = producto.getId() + ","
+                    + producto.getNombre() + ","
+                    + producto.getDescripcion() + ","
+                    + producto.getPrecio() + ","
+                    + cantidad + ","
+                    + producto.getIva();
+
+            // Agregar la cadena a la lista de productos comprados.
+            productosComprados.add(productoInfo);
         }
 
-        // Crear un objeto AtributosTicket con la información recopilada.
-        AtributosTicket atributosTicket = new AtributosTicket(precioFinal, idPedido, fechaYHoraOperacion, productosComprados.toString());
+        // Crear un objeto AtributosTicket con la información.
+        AtributosTicket atributosTicket = new AtributosTicket(precioFinal, idPedido, fechaYHoraOperacion, productosComprados);
 
         // Agregar el ticket a la lista de tickets.
         listaDeTickets.add(atributosTicket);
+        // Guardar el ticket en el archivo CSV.
+        guardarTicketEnCSV(atributosTicket);
 
         // Mostrar el ticket de compra utilizando JOptionPane.
         JOptionPane.showMessageDialog(null, atributosTicket.toString(), "Ticket de Compra", JOptionPane.INFORMATION_MESSAGE);
@@ -356,7 +373,13 @@ public class FuncionesCarrito {
 
     // Método para generar un ID de pedido único
     private static int generarIdPedido() {
-        return idPedidoContador++; // Incrementa el contador de ID de pedido y devuelve el valor anterior.
+        if (listaDeTickets.isEmpty()) {
+            return 1; // Si la lista de tickets está vacía, el último ID de pedido es 1
+        } else {
+            // Obtener el ID del último ticket en la lista de tickets
+            AtributosTicket ultimoTicket = listaDeTickets.get(listaDeTickets.size() - 1 );
+            return ultimoTicket.getIdPedido() + 1; // Devolver el ID del último ticket
+        }
     }
 
     // Método para volver al Menú Inicial
@@ -450,4 +473,62 @@ public class FuncionesCarrito {
 
         return ticketsFiltrados; // Retorna la lista de tickets filtrados.
     }
+
+    // Método para guardar un ticket en el archivo CSV
+    private static void guardarTicketEnCSV(AtributosTicket ticket) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("Tickets.csv", true))) {
+            // Escribir los datos del ticket en una nueva línea del archivo CSV
+            writer.write(ticket.toCSVFormat());
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("Error al guardar el ticket en el archivo CSV: " + e.getMessage());
+        }
+    }
+
+    // Método para leer todos los tickets desde el archivo "Tickets.csv"
+    public static List<AtributosTicket> leerTicketsDesdeCSV(String archivo) {
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            boolean primeraLinea = true; // Bandera para identificar la primera línea
+
+            while ((linea = br.readLine()) != null) {
+                // Si es la primera línea, simplemente pasa a la siguiente iteración del bucle
+                if (primeraLinea) {
+                    primeraLinea = false;
+                    continue;
+                }
+
+                // Dividir la línea en campos utilizando coma como delimitador
+                String[] campos = linea.split(",");
+
+                // Verificar que haya suficientes campos para crear un ticket
+                if (campos.length >= 4) {
+                    try {
+                        // Extraer los campos para construir un objeto AtributosTicket
+                        double precioFinal = Double.parseDouble(campos[0]);
+                        int idPedido = Integer.parseInt(campos[1]);
+                        LocalDateTime fechaYHoraOperacion = LocalDateTime.parse(campos[2]);
+                        List<String> productosComprados = Arrays.asList(Arrays.copyOfRange(campos, 3, campos.length));
+
+                        // Crear un nuevo objeto AtributosTicket y agregarlo a la lista
+                        listaDeTickets.add(new AtributosTicket(precioFinal, idPedido, fechaYHoraOperacion, productosComprados));
+                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException | DateTimeParseException e) {
+                        // Manejar errores de conversión o formato de datos
+                        System.out.println("Error al procesar la línea del archivo CSV: " + linea);
+                        e.printStackTrace();
+                    }
+                } else {
+                    // Si no hay suficientes campos, muestra un mensaje de error
+                    System.out.println("Error: número incorrecto de campos en la línea del archivo CSV: " + linea);
+                }
+            }
+        } catch (IOException e) {
+            // Manejar cualquier error de lectura del archivo
+            e.printStackTrace();
+        }
+
+        return listaDeTickets;
+    }
+
 }

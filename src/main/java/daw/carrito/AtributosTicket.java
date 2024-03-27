@@ -2,6 +2,7 @@ package daw.carrito;
 
 // Importar las clases necesarias desde otros paquetes.
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -14,10 +15,10 @@ public class AtributosTicket {
     private double precioFinal;
     private int idPedido;
     private LocalDateTime fechaYHoraOperacion;
-    private String productosComprados;
+    private List<String> productosComprados;
 
     // Constructor.
-    public AtributosTicket(double precioFinal, int idPedido, LocalDateTime fechaYHoraOperacion, String productosComprados) {
+    public AtributosTicket(double precioFinal, int idPedido, LocalDateTime fechaYHoraOperacion, List<String> productosComprados) {
         this.precioFinal = precioFinal;
         this.idPedido = idPedido;
         this.fechaYHoraOperacion = fechaYHoraOperacion;
@@ -49,11 +50,11 @@ public class AtributosTicket {
         this.fechaYHoraOperacion = fechaYHoraOperacion;
     }
 
-    public String getProductosComprados() {
+    public List<String> getProductosComprados() {
         return productosComprados;
     }
 
-    public void setProductosComprados(String productosComprados) {
+    public void setProductosComprados(List<String> productosComprados) {
         this.productosComprados = productosComprados;
     }
 
@@ -61,10 +62,10 @@ public class AtributosTicket {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 59 * hash + (int) (Double.doubleToLongBits(this.precioFinal) ^ (Double.doubleToLongBits(this.precioFinal) >>> 32));
-        hash = 59 * hash + this.idPedido;
-        hash = 59 * hash + Objects.hashCode(this.fechaYHoraOperacion);
-        hash = 59 * hash + Objects.hashCode(this.productosComprados);
+        hash = 31 * hash + (int) (Double.doubleToLongBits(this.precioFinal) ^ (Double.doubleToLongBits(this.precioFinal) >>> 32));
+        hash = 31 * hash + this.idPedido;
+        hash = 31 * hash + Objects.hashCode(this.fechaYHoraOperacion);
+        hash = 31 * hash + Objects.hashCode(this.productosComprados);
         return hash;
     }
 
@@ -87,21 +88,32 @@ public class AtributosTicket {
         if (this.idPedido != other.idPedido) {
             return false;
         }
-        if (!Objects.equals(this.productosComprados, other.productosComprados)) {
+        if (!Objects.equals(this.fechaYHoraOperacion, other.fechaYHoraOperacion)) {
             return false;
         }
-        return Objects.equals(this.fechaYHoraOperacion, other.fechaYHoraOperacion);
+        return Objects.equals(this.productosComprados, other.productosComprados);
     }
 
     // toString.
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Restaurante DawFood, Ticket de compra:\n\n");
-        sb.append("Numero de pedido: ").append(idPedido);
-        sb.append("\nHorarioOperacion -> ").append(fechaYHoraOperacion);
-        sb.append("\nPrecio Total: ").append(precioFinal).append(" €");
-        sb.append("\n" + productosComprados);
+        sb.append("AtributosTicket{");
+        sb.append("precioFinal=").append(precioFinal);
+        sb.append(", idPedido=").append(idPedido);
+        sb.append(", fechaYHoraOperacion=").append(fechaYHoraOperacion);
+        sb.append(", productosComprados=").append(productosComprados);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    // Método para formatear los datos del ticket en una cadena CSV
+    public String toCSVFormat() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(precioFinal).append(",");
+        sb.append(idPedido).append(",");
+        sb.append(fechaYHoraOperacion).append(",");
+        sb.append(productosComprados);
         return sb.toString();
     }
 
