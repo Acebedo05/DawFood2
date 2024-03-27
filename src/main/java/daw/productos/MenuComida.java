@@ -8,10 +8,14 @@ import daw.tpv.FuncionesTPV;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -320,15 +324,38 @@ public class MenuComida {
         // Crear un nuevo objeto Producto con los datos ingresados y agregarlo a la lista de comidas.
         Producto nuevoProducto = new Producto(id, nombre, precio, enStock, descripcion, categoria, iva, subcategoria);
         comidas.add(nuevoProducto);
+        // Escribir los detalles del nuevo producto en el archivo comidas.csv.
+        escribirProductoEnArchivoCSV(nuevoProducto);
 
         // Mostrar mensaje de que se ha añadido correctamente.
         JOptionPane.showMessageDialog(null, "Producto añadido correctamente a la lista de comidas.");
 
     }
 
+    private void escribirProductoEnArchivoCSV(Producto producto) {
+        String rutaArchivo = "Comidas.csv";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(rutaArchivo, true))) {
+            // Escribir los detalles del producto en una nueva línea en el archivo CSV.
+            String linea = producto.getId() + ","
+                    + producto.getNombre() + ","
+                    + producto.getPrecio() + ","
+                    + producto.getEnStock() + ","
+                    + producto.getDescripcion() + ","
+                    + producto.getCategoria() + ","
+                    + producto.getIva() + ","
+                    + producto.getSubcategoria();
+            writer.write(linea);
+            writer.newLine();
+        } catch (IOException e) {
+            // Manejar cualquier error de escritura en el archivo.
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al escribir en el archivo Comidas.csv.");
+        }
+    }
+
     // Método para verificar si ya existe un producto con el mismo nombre.
     private boolean nombreProductoExistente(String nombre) {
-        // Iterar sobre la lista de bebidas para verificar si existe un producto con el mismo nombre.
+        // Iterar sobre la lista de comidas para verificar si existe un producto con el mismo nombre.
         for (Producto producto : comidas) {
             // Comparar el nombre del producto actual con el nombre proporcionado (ignorando mayúsculas y minúsculas).
             if (producto.getNombre().equalsIgnoreCase(nombre)) {
@@ -470,22 +497,56 @@ public class MenuComida {
         return nuevoID; // Devolver el ID único obtenido.
     }
 
-    // Metodo para borrar producto de comidas.
+    // Método para borrar producto de comidas.
     public void borrarProducto(String nombreProducto) {
         // Iterar sobre la lista de comidas para encontrar el producto con el Nombre.
-        for (Producto producto : comidas) {
+        Iterator<Producto> iterator = comidas.iterator();
+        while (iterator.hasNext()) {
+            Producto producto = iterator.next();
             // Comparar el nombre del producto actual con el nombre proporcionado (sin distinguir mayúsculas y minúsculas).
             if (producto.getNombre().equalsIgnoreCase(nombreProducto)) {
                 // Eliminar el producto de la lista.
-                comidas.remove(producto);
-
+                iterator.remove();
+                // Eliminar el producto del archivo comidas.csv
+                eliminarProductoDelArchivo(producto);
                 JOptionPane.showMessageDialog(null, "Producto eliminado correctamente.");
                 return; // Salir del método después de eliminar el producto.
             }
         }
 
-        // Si el producto con el ID proporcionado no se encuentra, mostrar un mensaje de error.
+        // Si el producto con el nombre proporcionado no se encuentra, mostrar un mensaje de error.
         JOptionPane.showMessageDialog(null, "No se encontró ningún producto con el nombre proporcionado.");
+    }
+
+    // Método para eliminar un producto del archivo comidas.csv
+    private void eliminarProductoDelArchivo(Producto nombreProducto) {
+        String rutaArchivo = "Comidas.csv";
+        File archivo = new File(rutaArchivo);
+        List<String> lineas = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            // Leer todas las líneas del archivo y almacenarlas en una lista, excepto la línea del producto a eliminar
+            while ((linea = reader.readLine()) != null) {
+                // Verificar si la línea contiene el nombre del producto a eliminar
+                if (!linea.toLowerCase().contains(nombreProducto.getNombre().toLowerCase())) {
+                    lineas.add(linea);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al intentar eliminar el producto del archivo.");
+            return;
+        }
+        // Escribir el contenido actualizado al archivo
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo))) {
+            for (String linea : lineas) {
+                writer.write(linea + System.getProperty("line.separator"));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al actualizar el archivo Comidas.csv.");
+            return;
+        }
     }
 
     // Método para editar producto de comidas.
@@ -520,22 +581,33 @@ public class MenuComida {
                                 return;
                             }
 
+                            editarProductoEnArchivo(producto, eleccion, nuevoNombre);
                             producto.setNombre(nuevoNombre);
                             break;
                         case "Precio":
-                            producto.setPrecio(obtenerPrecioValido());
+                            double nuevoPrecio = obtenerPrecioValido();
+                            editarProductoEnArchivo(producto, eleccion, String.valueOf(nuevoPrecio));
+                            producto.setPrecio(nuevoPrecio);
                             break;
                         case "En Stock":
-                            producto.setEnStock(obtenerStockValido());
+                            int nuevoStock = obtenerStockValido();
+                            editarProductoEnArchivo(producto, eleccion, String.valueOf(nuevoStock));
+                            producto.setEnStock(nuevoStock);
                             break;
                         case "Descripción":
-                            producto.setDescripcion(JOptionPane.showInputDialog("Ingrese la nueva descripción del producto:"));
+                            String nuevaDescripcion = JOptionPane.showInputDialog("Ingrese la nueva descripción del producto:");
+                            editarProductoEnArchivo(producto, eleccion, nuevaDescripcion);
+                            producto.setDescripcion(nuevaDescripcion);
                             break;
                         case "IVA":
-                            producto.setIva(obtenerIVAValido());
+                            double nuevoIVA = obtenerIVAValido();
+                            editarProductoEnArchivo(producto, eleccion, String.valueOf(nuevoIVA));
+                            producto.setIva(nuevoIVA);
                             break;
                         case "Subcategoría":
-                            producto.setSubcategoria(obtenerSubcategoriaValida());
+                            String nuevaSubcategoria = obtenerSubcategoriaValida();
+                            editarProductoEnArchivo(producto, eleccion, nuevaSubcategoria);
+                            producto.setSubcategoria(nuevaSubcategoria);
                             break;
                     }
 
@@ -548,6 +620,76 @@ public class MenuComida {
 
         // Si no se encuentra el producto con el nombre proporcionado:
         JOptionPane.showMessageDialog(null, "No se encontró ningún producto con el nombre proporcionado.");
+    }
+
+    // Método para editar el producto en el archivo comidas.csv
+    private void editarProductoEnArchivo(Producto producto, String atributo, String nuevoValor) {
+        String rutaArchivo = "Comidas.csv";
+        File archivo = new File(rutaArchivo);
+
+        // Lista para almacenar las líneas actualizadas del archivo
+        List<String> lineasActualizadas = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            // Leer todas las líneas del archivo y almacenarlas en una lista, modificando la línea correspondiente al producto a editar
+            while ((linea = reader.readLine()) != null) {
+                // Si la línea actual corresponde al producto a editar, modificarla con los nuevos valores
+                if (linea.toLowerCase().startsWith(producto.getId().toLowerCase())) {
+                    switch (atributo) {
+                        case "Nombre":
+                            linea = linea.replaceFirst("(?i)" + producto.getNombre(), nuevoValor);
+                            break;
+                        case "Precio":
+                            linea = reemplazarCampo(linea, String.valueOf(producto.getPrecio()), nuevoValor, 2);
+                            break;
+                        case "En Stock":
+                            linea = reemplazarCampo(linea, String.valueOf(producto.getEnStock()), nuevoValor, 3);
+                            break;
+                        case "Descripción":
+                            linea = reemplazarCampo(linea, producto.getDescripcion(), nuevoValor, 4);
+                            break;
+                        case "IVA":
+                            linea = reemplazarCampo(linea, String.valueOf(producto.getIva()), nuevoValor, 6);
+                            break;
+                        case "Subcategoría":
+                            linea = reemplazarCampo(linea, producto.getSubcategoria(), nuevoValor, 7);
+                            break;
+                    }
+                }
+                lineasActualizadas.add(linea);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al intentar editar el producto en el archivo.");
+            return;
+        }
+
+        // Escribir el contenido actualizado al archivo
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo))) {
+            for (String linea : lineasActualizadas) {
+                writer.write(linea + System.getProperty("line.separator"));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al actualizar el archivo Comidas.csv.");
+            return;
+        }
+    }
+
+    // Método auxiliar para reemplazar el campo especificado en una línea con un nuevo valor
+    private String reemplazarCampo(String linea, String valorActual, String nuevoValor, int campoIndex) {
+        // Separamos los campos de la línea utilizando la coma como delimitador
+        String[] campos = linea.split(",");
+        // Reemplazamos el valor del campo en el índice especificado con el nuevo valor
+        campos[campoIndex] = nuevoValor;
+        // Reconstruimos la línea con los campos actualizados
+        StringBuilder nuevaLinea = new StringBuilder();
+        for (String campo : campos) {
+            nuevaLinea.append(campo).append(",");
+        }
+        // Eliminamos la coma adicional al final de la línea y devolvemos la línea actualizada
+        return nuevaLinea.substring(0, nuevaLinea.length() - 1);
     }
 
     // Método para obtener la cantidad de stock válida para el producto.
